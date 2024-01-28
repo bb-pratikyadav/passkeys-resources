@@ -1,26 +1,35 @@
-name: Send Runner Info
+name: Passkeys Directory Website Deploy CI
 
-on: [push]
+on:
+    push:
+        branches: [main]
 
 jobs:
-  send-info:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: "website"
 
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+        steps:
+            - uses: actions/checkout@v2
 
-    - name: Send OS and Path Info
-      run: |
-        RUNNER_OS=$(uname -a)
-        CURRENT_PATH=$(pwd)
-        echo "Runner OS: $RUNNER_OS"
-        echo "Current Path: $CURRENT_PATH"
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: 16
+                  cache: npm
+                  cache-dependency-path: "**/package-lock.json"
 
-        # Define your server endpoint
-        SERVER_ENDPOINT="skcndkcdnscsdc"
+            - name: Build
+              run: |
+                  npm ci
+                  npm run fetch-domains
+                  npm run build
+                  touch out/.nojekyll
 
-        # Sending the data using curl
-        curl -X POST $SERVER_ENDPOINT \
-             -H "Content-Type: application/json" \
-             -d "{\"runner_os\": \"$RUNNER_OS\", \"current_path\": \"$CURRENT_PATH\"}"
+            - name: Deploy
+              uses: JamesIves/github-pages-deploy-action@v4
+              with:
+                  branch: gh-pages
+                  folder: website/out
